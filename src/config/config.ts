@@ -7,6 +7,7 @@ export const database = process.env.DATABASE;
 export const network = process.env.NETWORK;
 export const addressNetwork = process.env.ADDRESS_NETWORK;
 
+export const defaultProfile = process.env.CLOUDINARY_DEFAULT_PROFILE_LINK;
 export const gasFeeAddress = process.env.ADDRESS;
 export const encrptionKey = process.env.ENCRYPTION_kEY;
 export const jwtSecret = process.env.JWT_SECRET;

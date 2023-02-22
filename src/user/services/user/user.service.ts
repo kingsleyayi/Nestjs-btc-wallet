@@ -4,7 +4,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { BitcoinService } from '../../../bitcoin/services/bitcoin/bitcoin.service';
 import { addressNetwork, jwtSecret, network } from '../../../config/config';
-import { CreateUserDto } from '../../../dto/user.dto';
+import { CreateUserDto, LoginUserDto } from '../../../dto/user.dto';
 import { IUser } from '../../../interface/user.interface';
 import { decryptpkey, encryptPkey } from '../../../utils/encryption';
 import * as bcrypt from 'bcrypt';
@@ -45,12 +45,40 @@ export class UserService {
     return newUser.save();
   }
 
+  async sendBitcoin(id: string, amount: number, receiverAddress: string) {
+    const user = await this.userModel.findById(id).exec();
+    if (!user) {
+      throw new NotFoundException(`User not found`);
+    }
+
+    const privateKey = await decryptpkey(user.btcPrivateKey);
+    await this.bitcoinService.sendBitcoin(amount, receiverAddress, privateKey);
+
+    return { message: 'successful' };
+  }
+
   async getUser(id: string): Promise<IUser> {
     const user = await this.userModel.findById(id).exec();
     if (!user) {
       throw new NotFoundException(`User not found`);
     }
     return user;
+  }
+
+  async loginUser(loginUserDto: LoginUserDto): Promise<IUser> {
+    const Email = loginUserDto.Email;
+    const user = await this.userModel.findOne({ Email }).exec();
+    if (!user) {
+      throw new NotFoundException();
+    }
+    const isMatch = await this.bcryptCompare(
+      loginUserDto.password,
+      user.password,
+    );
+    if (user.Email == Email && isMatch == true) {
+      return user;
+    }
+    throw new NotFoundException();
   }
 
   async getTokens(id: number): Promise<string> {

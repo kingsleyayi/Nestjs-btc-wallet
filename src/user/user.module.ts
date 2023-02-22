@@ -24,10 +24,16 @@ export class UserModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer
       .apply(ValidateAuthUser)
-      .exclude({
-        path: 'user/createuser',
-        method: RequestMethod.POST,
-      })
+      .exclude(
+        {
+          path: 'user/createuser',
+          method: RequestMethod.POST,
+        },
+        {
+          path: 'user/loginUser',
+          method: RequestMethod.POST,
+        },
+      )
       .forRoutes(UserController);
   }
 }

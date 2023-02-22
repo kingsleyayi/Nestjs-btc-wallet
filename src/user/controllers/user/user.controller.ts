@@ -11,7 +11,8 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import { BitcoinService } from '../../../bitcoin/services/bitcoin/bitcoin.service';
-import { CreateUserDto } from '../../../dto/user.dto';
+import { SendBitcoinDto } from '../../../dto/bitcoin.dto';
+import { CreateUserDto, LoginUserDto } from '../../../dto/user.dto';
 import { decryptpkey } from '../../../utils/encryption';
 import { decodeJwt } from '../../../utils/jwt';
 import { UserService } from '../../services/user/user.service';
@@ -45,5 +46,32 @@ export class UserController {
     const privateKey = await decryptpkey(user.btcPrivateKey);
     const balance = await this.bitcoinService.walletBalance(privateKey);
     return { user, balance };
+  }
+
+  @Post('loginUser')
+  @HttpCode(HttpStatus.OK)
+  async loginUser(@Body() loginUserDto: LoginUserDto) {
+    const user = await this.userService.loginUser(loginUserDto);
+    const token = await this.userService.getTokens(user.id);
+    if (user) {
+      return {
+        user,
+        token,
+      };
+    }
+  }
+
+  @Post('sendBitcoin')
+  @HttpCode(HttpStatus.OK)
+  async sendBitcoin(
+    @Body() sendBitcoinDto: SendBitcoinDto,
+    @Headers('Authorization') authorization: string,
+  ) {
+    const userId = await decodeJwt(authorization);
+    return await this.userService.sendBitcoin(
+      userId.sub,
+      sendBitcoinDto.amount,
+      sendBitcoinDto.receiverAddress,
+    );
   }
 }

@@ -22,3 +22,13 @@ export class CreateUserDto {
   @IsEnum(genderEnum)
   gender: string;
 }
+
+export class LoginUserDto {
+  @IsNotEmpty()
+  @IsEmail()
+  Email: string;
+
+  @IsString()
+  @IsNotEmpty()
+  password: string;
+}

@@ -1,4 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { defaultProfile } from '../config/config';
 @Schema()
 export class User {
   @Prop()
@@ -8,8 +9,7 @@ export class User {
   password: string;
 
   @Prop({
-    default:
-      'https://res.cloudinary.com/dreizdxyb/image/upload/v1676929171/btcwallet/vecteezy_profile-icon-design-vector_5544718_xm6vdc.jpg',
+    default: defaultProfile,
   })
   profilePicture: string;
 
