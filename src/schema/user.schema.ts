@@ -1,5 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { getModelForClass } from '@typegoose/typegoose';
 import { defaultProfile } from '../config/config';
+import { userStatus } from '../utils/enum';
 @Schema()
 export class User {
   @Prop()
@@ -7,6 +9,9 @@ export class User {
 
   @Prop()
   password: string;
+
+  @Prop()
+  qrCodeImageLink: string;
 
   @Prop({
     default: defaultProfile,
@@ -20,7 +25,7 @@ export class User {
   btcPrivateKey: string;
 
   @Prop({ default: 0 })
-  invesmentBalance: string;
+  invesmentBalance: number;
 
   @Prop()
   HomeAddress: string;
@@ -31,8 +36,15 @@ export class User {
   @Prop()
   gender: string;
 
-  @Prop()
-  public createdAt?: Date;
+  @Prop({ default: userStatus.ACTIVE })
+  status: string;
+
+  @Prop({ select: false })
+  token: string;
+
+  @Prop({ default: Date.now })
+  createdAt?: Date;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
+export const UserModel = getModelForClass(User); // add this line

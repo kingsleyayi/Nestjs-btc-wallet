@@ -18,5 +18,11 @@ export interface IUser extends Document {
 
   gender: string;
 
+  status: string;
+
+  qrCodeImageLink: string;
+
+  token: string;
+
   createdAt?: Date;
 }

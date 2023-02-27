@@ -8,16 +8,16 @@ import * as dotenv from 'dotenv';
 import { NextFunction, Response, Request } from 'express';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { jwtSecret } from '../config/config';
-import { decodeJwt } from '../utils/jwt';
-import { User } from '../schema/user.schema';
+import { adminJwtSecret } from '../config/config';
+import { decodeAdminJwt } from '../utils/jwt';
+import { Admin } from '../schema/admin.schema';
 
 dotenv.config();
 
 @Injectable()
-export class ValidateAuthUser implements NestMiddleware {
+export class ValidateAuthAdmin implements NestMiddleware {
   constructor(
-    @InjectModel(User.name) private readonly userModel: Model<User>,
+    @InjectModel(Admin.name) private readonly adminModel: Model<Admin>,
   ) {}
 
   async use(req: Request, res: Response, next: NextFunction) {
@@ -26,9 +26,9 @@ export class ValidateAuthUser implements NestMiddleware {
       throw new UnauthorizedException();
     } else {
       try {
-        jwt.verify(authorization, jwtSecret);
-        const decode = await decodeJwt(authorization);
-        const user = await this.userModel.findOne({
+        jwt.verify(authorization, adminJwtSecret);
+        const decode = await decodeAdminJwt(authorization);
+        const user = await this.adminModel.findOne({
           _id: decode.sub,
           token: authorization,
         });

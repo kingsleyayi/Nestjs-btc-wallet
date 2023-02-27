@@ -3,13 +3,16 @@ import { BitcoinModule } from './bitcoin/bitcoin.module';
 import { UserModule } from './user/user.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { database, databaseName } from './config/config';
-import { UserSchema } from './schema/user.schema';
+
+import { appSchemas } from './schema';
+import { AdminModule } from './admin/admin.module';
 @Module({
   imports: [
     MongooseModule.forRoot(database, { dbName: databaseName }),
-    MongooseModule.forFeature([{ name: 'User', schema: UserSchema }]),
+    MongooseModule.forFeature(appSchemas),
     BitcoinModule,
     UserModule,
+    AdminModule,
   ],
   controllers: [],
   providers: [],
